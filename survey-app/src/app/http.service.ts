@@ -18,34 +18,18 @@ export class HttpService {
     return this.http.get("/api/users/current-user");
   }
 
-  // updateAuthor(author) {
-  //   return this.http.put(`/api/users/${author._id}`, author);
-  // }
-
-  // deleteAuthor(authorId) {
-  //   return this.http.delete(`/api/users/${authorId}`);
-  // }
+  removePoll(pollId) {
+    return this.http.delete(`/api/users/polls/${pollId}`);
+  }
 
   addPoll(userId, pollObj) {
     return this.http.post(`/api/users/${userId}`, pollObj);
   };
 
-  removePoll(userId, pollObj) {
-    return this.http.put(`/api/users/quotes/${userId}`, pollObj);
+  addVote(pollId, optionObj) {
+    return this.http.put(`/api/users/polls/${pollId}`, optionObj);
   };
-
-  addVoteTo1(pollId) {
-    return this.http.get(`/api/users/poll/${pollId}`);
-  }
-  addVoteTo2(pollId) {
-    return this.http.get(`/api/users/poll/${pollId}`);
-  }
-  addVoteTo3(pollId) {
-    return this.http.get(`/api/users/poll/${pollId}`);
-  }
-  addVoteTo4(pollId) {
-    return this.http.get(`/api/users/poll/${pollId}`);
-  }
+  
   deleteSession() {
     return this.http.get("/api/users/logout");
   }

@@ -28,7 +28,7 @@ var userSchema = new Schema({
 mongoose.model("User", userSchema);
 var User = mongoose.model("User");
 mongoose.Promise = global.Promise;
-// getAllUsers()
+// Get all users
 app.get("/api/users", function(request, response) {
     User.find({}, function(err, users) {
         if (err) {
@@ -99,24 +99,53 @@ app.post("/api/users/:id", function(request, response) {
         };
     });
 });
-app.get("/api/users/poll/:id", function(request, response) {
+// Delete a poll
+app.delete("/api/users/polls/:id",function(request, response) {
     User.find({}, function(err, users) {
         if (err) {
             response.json(err);
         } else {
             for (let user of users) {
-                for (let poll of user.polls) {
-                    if (poll._id == request.params.id) {
-                        poll.option1.vote += 1;
-                        users.save(function(err) {
+                for (let i = 0; i < user.polls.length; i++) {
+                    if (user.polls[i]._id == request.params.id) {
+                        user.polls.splice(i, 1);
+                        user.save(function(err) {
                             if (err) {
                                 response.json(err)
                             } else {
-                                response.json({message: "Quote vote increased by 1"});
+                                response.json({message: "Poll deleted!"});
                             };
                         });
                     } else {
-                        console.log("Quote not found at index ");
+                        console.log("Poll not found");
+                    };
+                };
+            };
+        };
+    });
+});
+// Add vote
+app.put("/api/users/polls/:id", function(request, response) {
+    User.find({}, function(err, users) {
+        if (err) {
+            response.json(err);
+        } else {
+            console.log("request.body.option: ", request.body.option);
+            for (let user of users) {
+                for (let poll of user.polls) {
+                    if (poll._id == request.params.id) {
+                        for (let key in poll) {
+                            if (key == request.body.option) {
+                                poll[key].vote += 1;
+                                user.save(function(err) {
+                                    if (err) {
+                                        response.json(err)
+                                    } else {
+                                        response.json({message: `${key} vote increased by 1`});
+                                    };
+                                });
+                            };
+                        };
                     };
                 };
             }
@@ -130,100 +159,9 @@ app.get("/api/users/logout", function(request, response) {
             response.json(err);
         } else {
             response.json({status: false});
-        }
-    })
-})
-
-// app.put("/api/authors/:id", function(request, response) {
-//     var id = request.params.id;
-//     Author.update({_id: id}, request.body, {runValidators: true}, function(err) {
-//         if (err) {
-//             response.json(err);
-//         } else {
-//             response.json({message: "Update successful!"});
-//         };
-//     });
-// });
-
-// app.put("/api/authors/quotes/:id", function(request, response) {
-//     Author.findOne({_id: request.params.id}, function(err, author) {
-//         if (err) {
-//             response.json(err);
-//         } else {
-//             for (let i = 0; i < author.quotes.length; i++) {
-//                 if (author.quotes[i]._id == request.body._id) {
-//                     author.quotes.splice(i, 1);
-//                     author.save(function(err) {
-//                         if (err) {
-//                             response.json(err)
-//                         } else {
-//                             response.json({message: "Quote deleted!"});
-//                         };
-//                     });
-//                 } else {
-//                     console.log("Quote not found at index ", i);
-//                 };
-//             };
-//         };
-//     });
-// });
-
-// app.put("/api/authors/quotes/:id/voteup", function(request, response) {
-//     Author.findOne({_id: request.params.id}, function(err, author) {
-//         if (err) {
-//             response.json(err);
-//         } else {
-//             for (let i = 0; i < author.quotes.length; i++) {
-//                 if (author.quotes[i]._id == request.body._id) {
-//                     author.quotes[i].vote += 1;
-//                     author.save(function(err) {
-//                         if (err) {
-//                             response.json(err)
-//                         } else {
-//                             response.json({message: "Quote vote increased by 1"});
-//                         };
-//                     });
-//                 } else {
-//                     console.log("Quote not found at index ", i);
-//                 };
-//             };
-//         };
-//     });
-// });
-
-// app.put("/api/authors/quotes/:id/votedown", function(request, response) {
-//     Author.findOne({_id: request.params.id}, function(err, author) {
-//         if (err) {
-//             response.json(err);
-//         } else {
-//             for (let i = 0; i < author.quotes.length; i++) {
-//                 if (author.quotes[i]._id == request.body._id) {
-//                     author.quotes[i].vote -= 1;
-//                     author.save(function(err) {
-//                         if (err) {
-//                             response.json(err)
-//                         } else {
-//                             response.json({message: "Quote vote decreased by 1"});
-//                         };
-//                     });
-//                 } else {
-//                     console.log("Quote not found at index ", i);
-//                 };
-//             };
-//         };
-//     });
-// });
-
-// app.delete("/api/authors/:id", function(request, response) {
-//     Author.findOne({_id: request.params.id}, function(err, author) {
-//         if (err) {
-//             response.json(err);
-//         } else {
-//             console.log(author.quotes);
-//             response.json({message: "Quote deleted!"})
-//         }
-//     })
-// });
+        };
+    });
+});
 
 app.all("*", function(request, response) {
     response.sendFile(path.resolve(__dirname + "/survey-app/dist/index.html"))

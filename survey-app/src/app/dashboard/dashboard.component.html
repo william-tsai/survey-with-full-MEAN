@@ -18,7 +18,7 @@
       <td>{{poll.username}}</td>
       <td><a [routerLink] = "['/#poll/' + poll._id]">{{poll.question}}</a></td>
       <td>{{poll.timestamp}}</td>
-      <!-- <td *ngIf = "isPollCreator == true"><button (click) = "deleteButtonClicked(poll._id)">Delete</button></td> -->
+      <td *ngIf = "poll.username == currentUser.name"><button (click) = "deleteButtonClicked(poll._id)">Delete</button></td>
     </tr>
   </tbody>
 </table>

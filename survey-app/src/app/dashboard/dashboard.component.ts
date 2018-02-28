@@ -9,18 +9,29 @@ import { Router } from '@angular/router';
 })
 export class DashboardComponent implements OnInit {
   users: any[] = [];
+  currentUser: any = {name: ""};
   searchTerm: string;
-  isPollCreater: boolean;
   filteredPolls: any[] = [];
   polls: any[] = [];
 
   constructor(private httpService: HttpService, private router: Router) { }
 
   ngOnInit() {
-    this.isPollCreater = false;
+    this.fetchCurrentUser();
     this.displayPolls();
   }
 
+  fetchCurrentUser() {
+    this.httpService.getOneUser()
+    .subscribe((response: any) => {
+      if (response.errors) {
+         console.log(response.errors);
+      } else {
+        this.currentUser = response;
+      };
+    });
+  };
+  
   displayPolls() {
     this.httpService.getAllUsers()
     .subscribe((response: any) => {
@@ -31,9 +42,22 @@ export class DashboardComponent implements OnInit {
         for (let user of response) {
           for (let poll of user.polls) {
             this.polls.push(poll);
-          }
-        }
-        this.filteredPolls = this.polls;
+            this.filteredPolls = this.polls;
+          };
+        };
+      };
+    });
+  };
+
+  deleteButtonClicked(pollId) {
+    this.polls = [];
+    this.httpService.removePoll(pollId)
+    .subscribe((response: any) => {
+      if (response.errors) {
+        console.log(response.errors);
+      } else {
+        console.log(response.message);
+        this.displayPolls(); 
       }
     })
   }

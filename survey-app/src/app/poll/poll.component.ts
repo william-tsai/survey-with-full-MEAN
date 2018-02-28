@@ -8,81 +8,85 @@ import { Router, ActivatedRoute } from '@angular/router';
   styleUrls: ['./poll.component.css']
 })
 export class PollComponent implements OnInit {
-  users: any;
-  poll: any;
+  users: any[] = [];
+  poll: any = {username: "", questions: "", option1: "", option2: "", option3: "", option4: ""}
+  option = {option: ""};
 
   constructor(private httpService: HttpService, private router: Router, private route: ActivatedRoute) { }
-
+  
   ngOnInit() {
-    this.fetchUsersAndPoll();
+    this.fetchUsersAndDisplayPoll();
   }
 
-  fetchUsersAndPoll() {
-    this.httpService.getAllUsers()
-    .subscribe((response: any) => {
+  fetchUsersAndDisplayPoll() {
+    this.route.paramMap.subscribe(params => {
+      this.httpService.getAllUsers()
+      .subscribe((response: any) => {
+        if (response.errors) {
+          console.log(response.errors);
+        } else {
+          for (let user of response) {
+            for (let poll of user.polls) {
+              if (poll._id == params.get("id")) {
+                this.poll = poll;
+                console.log("Got the poll!");
+              };
+            };
+          };
+        };
+      });
+    })
+  };
+
+  voteOpt1Clicked() {
+    this.option.option = "option1";
+    this.httpService.addVote(this.poll._id, this.option)
+    .subscribe((response: any) => {  
       if (response.errors) {
         console.log(response.errors);
       } else {
-        console.log(response);
-        var pollId: any;
-        this.route.paramMap.subscribe(params => {
-          pollId = params.get("id");
-        });
-        for (let user of response) {
-          for (let poll of user.polls) {
-            if (poll._id == pollId) {
-              this.poll = poll;
-            }
-          }
-        }
+        console.log(response.message);
+        this.fetchUsersAndDisplayPoll();
       }
     })
   }
-  voteOpt1Clicked() {
-    this.httpService.addVoteTo1(this.poll._id)
+
+  voteOpt2Clicked() {
+    this.option.option = "option2";
+    this.httpService.addVote(this.poll._id, this.option)
     .subscribe((response: any) => {
       if (response.errors) {
         console.log(response.errors);
       } else {
         console.log(response.message);
-        this.fetchUsersAndPoll();
+        this.fetchUsersAndDisplayPoll();
       }
     })
   }
 
-  // voteOpt2Clicked() {
-  //   this.httpService.addVoteTo2(this.poll._id)
-  //   .subscribe((response: any) => {
-  //     if (response.errors) {
-  //       console.log(response.errors);
-  //     } else {
-  //       console.log(response.message);
-  //       this.displayQuotes();
-  //     }
-  //   })
-  // }
+  voteOpt3Clicked() {
+    this.option.option = "option3";
+    this.httpService.addVote(this.poll._id, this.option)
+    .subscribe((response: any) => {
+      if (response.errors) {
+        console.log(response.errors);
+      } else {
+        console.log(response.message);
+        this.fetchUsersAndDisplayPoll();
+      }
+    })
+  }
 
-  // voteOpt3Clicked() {
-  //   this.httpService.addVoteTo3(this.poll._id)
-  //   .subscribe((response: any) => {
-  //     if (response.errors) {
-  //       console.log(response.errors);
-  //     } else {
-  //       console.log(response.message);
-  //       this.displayQuotes();
-  //     }
-  //   })
-  // }
-
-  // voteOpt4Clicked() {
-  //   this.httpService.addVoteTo4(this.poll._id)
-  //   .subscribe((response: any) => {
-  //     if (response.errors) {
-  //       console.log(response.errors);
-  //     } else {
-  //       console.log(response.message);
-  //       this.displayQuotes();
-  //     }
-  //   })
-  // }
+  voteOpt4Clicked() {
+    this.option.option = "option4";
+    this.httpService.addVote(this.poll._id, this.option)
+    .subscribe((response: any) => {
+      if (response.errors) {
+        console.log(response.errors);
+      } else {
+        console.log(response.message);
+        this.fetchUsersAndDisplayPoll();
+      }
+    })
+  }
 }

@@ -10,7 +10,6 @@ const routes: Routes = [
   { path: '#dashboard', component: DashboardComponent},
   { path: '#poll/:id', component: PollComponent},
   { path: '#create', component: AddPollComponent},
-  // { path: 'page-not-found', component: PageNotFoundComponent},
   { path: '**', redirectTo: '#dashboard'}
 ];
 

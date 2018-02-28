@@ -21,7 +21,7 @@ export class LoginComponent implements OnInit {
       if (response.errors) {
         console.log(response.errors);
       } else {
-        console.log("New user created!");
+        console.log(response.status);
         this.router.navigate(['/#dashboard']);
       }
     })
